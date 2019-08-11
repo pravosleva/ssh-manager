@@ -265,7 +265,7 @@ class App extends React.Component {
                                       <>
                                         <Divider horizontal>Out</Divider>
                                         <Card.Description>
-                                          <pre>{String(connections[id].out)}</pre>
+                                          <pre><small>{String(connections[id].out)}</small></pre>
                                         </Card.Description>
                                       </>
                                     ) : null
