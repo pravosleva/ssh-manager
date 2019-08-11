@@ -1,0 +1,56 @@
+{
+  "name": "ssh-manager",
+  "version": "1.0.0",
+  "description": "SSH manager",
+  "main": "main.js",
+  "scripts": {
+    "install-all": "yarn install && yarn --cwd ./frontend install",
+    "build-client": "yarn --cwd ./frontend build",
+    "start": "NODE_ENV=production electron .",
+    "fresh-prod-start": "yarn build-client && NODE_ENV=production yarn start",
+    "frontend-dev": "yarn --cwd ./frontend dev",
+    "dev": "concurrently --kill-others \"yarn frontend-dev\" \"NODE_ENV=development electron .\"",
+    "dev-1": "yarn frontend-dev && NODE_ENV=development electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "productName": "Remote cmd",
+    "appId": "your.id",
+    "mac": {
+      "category": "your.app.category.type"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "snap",
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    }
+  },
+  "repository": "https://github.com/pravosleva/ssh-manager",
+  "author": {
+    "name": "Den Pol",
+    "email": "selection4test@gmail.com",
+    "url": "https://github.com/pravosleva/ssh-manager"
+  },
+  "keywords": [
+    "cmd"
+  ],
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "concurrently": "^4.1.1",
+    "electron": "^5.0.6",
+    "electron-builder": "^21.1.5"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "simple-ssh": "^1.0.0"
+  }
+}
