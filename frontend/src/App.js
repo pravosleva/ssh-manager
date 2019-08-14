@@ -138,7 +138,10 @@ class App extends React.Component {
                     _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out }))
                   },
                   cbExit: code => {},
-                  cbError: stderr => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr })),
+                  cbError: stderr => {
+                    _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr }));
+                    _this.props.scrollDownByID(id);
+                  },
                 }),
               },
             }));
@@ -197,14 +200,28 @@ class App extends React.Component {
                               <Card
                                 key={connections[id].info.id}
                                 // fluid
+                                style={{ position: 'relative' }}
                               >
+                                <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
+                                  <Button
+                                    basic
+                                    color='red'
+                                    onClick={() => {
+                                      this.props.dispatch(removeConnection(id));
+                                      removeRef(id);
+                                    }}
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
                                 <Card.Content>
                                   {/* <Image floated='right' size='mini' src='/images/avatar/large/steve.jpg' /> */}
                                   <Card.Header>{connections[id].info.user}@{connections[id].info.host}</Card.Header>
                                   <Card.Meta>{connections[id].info.description}</Card.Meta>
                                 </Card.Content>
+                                {/*
                                 <Card.Content>
-                                  <div /* className='ui two buttons' */>
+                                  <div>
                                     <Button
                                       basic
                                       color='blue'
@@ -213,18 +230,9 @@ class App extends React.Component {
                                     >
                                       Run
                                     </Button>
-                                    <Button
-                                      basic
-                                      color='red'
-                                      onClick={() => {
-                                        this.props.dispatch(removeConnection(id));
-                                        removeRef(id);
-                                      }}
-                                    >
-                                      Remove
-                                    </Button>
                                   </div>
                                 </Card.Content>
+                                */}
                                 <Card.Content>
                                   <Form>
                                     <Form.Group widths='equal'>
@@ -258,7 +266,10 @@ class App extends React.Component {
                                                     },
                                                     cbExe: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
                                                     cbExit: code => {},
-                                                    cbError: stderr => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr })),
+                                                    cbError: stderr => {
+                                                      _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr }));
+                                                      _this.props.scrollDownByID(id);
+                                                    },
                                                   }),
                                                 }));
                                               };

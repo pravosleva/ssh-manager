@@ -22,7 +22,9 @@ const withLocalStorageManager = compose(
           behavior: 'auto',
           block: 'end',
         });
-        setTimeout(doIt, 1000);
+        // setTimeout(doIt, 1000);
+        doIt();
+        window.scrollBy(0, 40);
       },
       tst: props => () => {
         console.log(props);
