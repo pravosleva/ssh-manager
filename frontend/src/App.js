@@ -251,11 +251,13 @@ class App extends React.Component {
                                           this.props.dispatch(updateConnection({ id, fieldName: 'comand', newValue: e.target.value }));
                                         }}
                                         onKeyUp={ev => {
-                                          if (ev.keyCode == 13) {
+                                          const couldBeRunned = !connections[id].comand.length || !connections[id].pass || !connections[id].terminal;
+
+                                          if (ev.keyCode == 13 && couldBeRunned) {
                                             connections[id].terminal.run(connections[id].comand)
                                           };
                                         }}
-                                        disabled={!connections[id].comand.length || !connections[id].pass || !connections[id].terminal}
+                                        // disabled={!connections[id].comand.length || !connections[id].pass || !connections[id].terminal}
                                       />
                                     </Form.Group>
                                   </Form>
