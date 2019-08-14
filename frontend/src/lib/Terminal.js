@@ -5,6 +5,7 @@ class Terminal {
     this.host = props.host;
     this.user = props.user;
     this.pass = props.pass;
+    // this.out = props.out;
     this.cbExe = props.cbExe;
     this.cbError = props.cbError;
     this.cbExit = props.cbExit;
@@ -36,6 +37,7 @@ class Terminal {
     this.ssh
       .exec(comand, {
         out: stdout => {
+          // this.out += '\n' + stdout;
           this.cbOut(String(stdout));
         },
         exit: code => {
@@ -57,6 +59,10 @@ class Terminal {
           this.cbError(err);
         },
       });
+  }
+
+  get(fieldName) {
+    return this[fieldName];
   }
 };
 

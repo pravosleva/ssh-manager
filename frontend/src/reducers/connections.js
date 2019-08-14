@@ -44,6 +44,13 @@ export const { actions: connectionsActions, reducer: connections } = createSymbi
       ...state,
       [id]: stuff,
     }),
+    updateOut: (state, { id, out }) => ({
+      ...state,
+      [id]: {
+        ...state[id],
+        out: !state[id].out ? out : state[id].out + '\n' + out
+      },
+    }),
     update: (state, { id, fieldName, newValue }) => {
       const elementToUpdate = { ...state[id] };
 

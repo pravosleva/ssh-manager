@@ -17,12 +17,15 @@ import PropTypes from 'prop-types';
 import {
   addConnection,
   updateConnection,
+  updateOut,
   removeConnection,
 } from './actions';
 import VerticalSidebar from './components/Sidebar/Vertical';
 import Terminal from './lib/Terminal';
 import { getPartialBySize } from './lib/arrays';
 import withLocalStorageManager from './hocs/withLocalStorageManager';
+import withRefs from './hocs/withRefs';
+import OutputSpace from './components/Console/OutputSpace';
 
 class App extends React.Component {
   state = {
@@ -86,7 +89,14 @@ class App extends React.Component {
 
   render() {
     const { activeItem, menuVisible } = this.state;
-    const { connections } = this.props;
+    const {
+      connections,
+      // withRefs
+      scrollDownByID,
+      addRef,
+      removeRef,
+      ...props
+    } = this.props;
 
     return (
       <Sidebar.Pushable /* as={Segment} */ style={{ minHeight: '100vh' }}>
@@ -107,6 +117,7 @@ class App extends React.Component {
           }) => {
             const _this = this;
 
+            addRef(id);
             this.props.dispatch(addConnection({
               id,
               stuff: {
@@ -118,8 +129,14 @@ class App extends React.Component {
                   host,
                   user,
                   pass,
-                  cbOut: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
-                  cbExe: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
+                  cbOut: out => {
+                    // _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out }));
+                    _this.props.dispatch(updateOut({ id, out }));
+                    _this.props.scrollDownByID(id);
+                  },
+                  cbExe: out => {
+                    _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out }))
+                  },
                   cbExit: code => {},
                   cbError: stderr => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr })),
                 }),
@@ -199,7 +216,10 @@ class App extends React.Component {
                                     <Button
                                       basic
                                       color='red'
-                                      onClick={() => this.props.dispatch(removeConnection(id))}
+                                      onClick={() => {
+                                        this.props.dispatch(removeConnection(id));
+                                        removeRef(id);
+                                      }}
                                     >
                                       Remove
                                     </Button>
@@ -223,6 +243,7 @@ class App extends React.Component {
                                               const _this = this;
 
                                               if (ev.keyCode == 13) {
+                                                addRef(id);
                                                 this.props.dispatch(updateConnection({
                                                   id,
                                                   fieldName: 'terminal',
@@ -230,7 +251,11 @@ class App extends React.Component {
                                                     host: connections[id].info.host,
                                                     user: connections[id].info.user,
                                                     pass: connections[id].pass,
-                                                    cbOut: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
+                                                    // cbOut: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
+                                                    cbOut: out => {
+                                                      _this.props.dispatch(updateOut({ id, out }));
+                                                      _this.props.scrollDownByID(id);
+                                                    },
                                                     cbExe: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
                                                     cbExit: code => {},
                                                     cbError: stderr => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr })),
@@ -251,17 +276,22 @@ class App extends React.Component {
                                           this.props.dispatch(updateConnection({ id, fieldName: 'comand', newValue: e.target.value }));
                                         }}
                                         onKeyUp={ev => {
-                                          const couldBeRunned = !connections[id].comand.length || !connections[id].pass || !connections[id].terminal;
+                                          const couldBeRunned = connections[id].terminal && (connections[id].comand.length > 0 || connections[id].pass || connections[id].terminal);
 
-                                          if (ev.keyCode == 13 && couldBeRunned) {
-                                            connections[id].terminal.run(connections[id].comand)
-                                          };
+                                          if (ev.keyCode == 13) {
+                                            if (couldBeRunned) {
+                                              connections[id].terminal.run(connections[id].comand);
+                                            } else {
+                                              console.warn('Could not be runned.');
+                                            }
+                                            return;
+                                          }
                                         }}
                                         // disabled={!connections[id].comand.length || !connections[id].pass || !connections[id].terminal}
                                       />
                                     </Form.Group>
                                   </Form>
-                                  {
+                                  {/*
                                     connections[id].out
                                     ? (
                                       <>
@@ -270,6 +300,14 @@ class App extends React.Component {
                                           <pre><small>{String(connections[id].out)}</small></pre>
                                         </Card.Description>
                                       </>
+                                    ) : null
+                                  */}
+                                  {
+                                    connections[id].out
+                                    ? (
+                                      <OutputSpace>
+                                        <pre ref={props[id]}><small>{String(connections[id].out)}</small></pre>
+                                      </OutputSpace>
                                     ) : null
                                   }
                                 </Card.Content>
@@ -309,4 +347,4 @@ const mapState = ({ connections }) => ({
   connections,
 });
 
-export default withLocalStorageManager(connect(mapState)(App));
+export default withRefs(withLocalStorageManager(connect(mapState)(App)));
