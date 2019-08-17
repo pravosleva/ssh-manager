@@ -32,6 +32,8 @@ class Terminal {
         });
     } else {
       this.ssh = null;
+      specialLog('(window && window.SSH) is false!', 'error', ['window.SSH not found!']);
+      return;
     }
 
     this.ssh
