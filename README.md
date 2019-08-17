@@ -1,4 +1,8 @@
-# electron-react-boilerplate-2019
+# SSH manager
+
+## About
+
+This desktop app was created to have some ssh connections on board and ability to save their settings.
 
 ## How to use
 

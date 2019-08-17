@@ -1,9 +1,9 @@
-import { connectionsActions } from '../reducers/connections';
+import { windowsActions } from '../reducers/windows';
 
-export const addConnection = newObj => async (dispatch) => {
+export const addWindow = newObj => async (dispatch) => {
   // console.log(newObj);
   try {
-    await dispatch(connectionsActions.add(newObj));
+    await dispatch(windowsActions.add(newObj));
     return Promise.resolve();
   }
   catch(err) {
@@ -11,10 +11,10 @@ export const addConnection = newObj => async (dispatch) => {
   }
 };
 
-export const updateConnection = newObj => async (dispatch) => {
+export const updateWindow = newObj => async (dispatch) => {
   // console.log(newObj); // { id, fieldName, newValue }
   try {
-    await dispatch(connectionsActions.update(newObj));
+    await dispatch(windowsActions.update(newObj));
     return Promise.resolve();
   }
   catch(err) {
@@ -25,7 +25,7 @@ export const updateConnection = newObj => async (dispatch) => {
 export const updateOut = newObj => async (dispatch) => {
   // console.log(newObj); // { id, fieldName, newValue }
   try {
-    await dispatch(connectionsActions.updateOut(newObj));
+    await dispatch(windowsActions.updateOut(newObj));
     return Promise.resolve();
   }
   catch(err) {
@@ -33,9 +33,9 @@ export const updateOut = newObj => async (dispatch) => {
   }
 };
 
-export const removeConnection = id => async (dispatch) => {
+export const removeWindow = id => async (dispatch) => {
   try {
-    await dispatch(connectionsActions.remove(id));
+    await dispatch(windowsActions.remove(id));
     return Promise.resolve();
   }
   catch(err) {

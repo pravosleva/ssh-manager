@@ -15,10 +15,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  addConnection,
-  updateConnection,
+  addWindow,
+  updateWindow,
   updateOut,
-  removeConnection,
+  removeWindow,
 } from './actions';
 import VerticalSidebar from './components/Sidebar/Vertical';
 import Terminal from './lib/Terminal';
@@ -36,23 +36,23 @@ class App extends React.Component {
   menuToggle = (e, { checked }) => this.setState({ menuVisible: checked })
 
   getSpecialConnectionsObjectFromStore = () => {
-    if (!this.props.connections) {
+    if (!this.props.windows) {
       return null;
     }
-    if (!Object.keys(this.props.connections).length) {
+    if (!Object.keys(this.props.windows).length) {
       return null;
     }
 
-    const connections = { ...this.props.connections };
+    const windows = { ...this.props.windows };
     const result = [];
 
-    Object.keys(connections).map(k => {
+    Object.keys(windows).map(k => {
       result.push({
-        user: connections[k].info.user,
-        host: connections[k].info.host,
-        id: connections[k].info.id,
-        comand: connections[k].comand,
-        description: connections[k].info.description,
+        user: windows[k].info.user,
+        host: windows[k].info.host,
+        id: windows[k].info.id,
+        comand: windows[k].comand,
+        description: windows[k].info.description,
       });
 
       return false;
@@ -62,14 +62,14 @@ class App extends React.Component {
   }
 
   setConnectionFromLSToStore = () => {
-    const connectionsFromLS = this.props.getLSItem('connections');
+    const connectionsFromLS = this.props.getLSItem('windows');
 
     if (!connectionsFromLS) {
       return null;
     }
 
     for (let i = 0; i < connectionsFromLS.length; i++) {
-      this.props.dispatch(addConnection({
+      this.props.dispatch(addWindow({
         id: connectionsFromLS[i].id,
         stuff: {
           info: {
@@ -90,7 +90,7 @@ class App extends React.Component {
   render() {
     const { activeItem, menuVisible } = this.state;
     const {
-      connections,
+      windows,
       // withRefs
       scrollDownByID,
       addRef,
@@ -118,7 +118,7 @@ class App extends React.Component {
             const _this = this;
 
             addRef(id);
-            this.props.dispatch(addConnection({
+            this.props.dispatch(addWindow({
               id,
               stuff: {
                 info: { user, host, id, description },
@@ -130,16 +130,16 @@ class App extends React.Component {
                   user,
                   pass,
                   cbOut: out => {
-                    // _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out }));
+                    // _this.props.dispatch(updateWindow({ id, fieldName: 'out', newValue: out }));
                     _this.props.dispatch(updateOut({ id, out }));
                     _this.props.scrollDownByID(id);
                   },
                   cbExe: out => {
-                    _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out }))
+                    _this.props.dispatch(updateWindow({ id, fieldName: 'out', newValue: out }))
                   },
                   cbExit: code => {},
                   cbError: stderr => {
-                    _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr }));
+                    _this.props.dispatch(updateWindow({ id, fieldName: 'out', newValue: stderr }));
                     _this.props.scrollDownByID(id);
                   },
                 }),
@@ -154,9 +154,9 @@ class App extends React.Component {
             <Button
               basic
               color='grey'
-              onClick={() => this.props.getLSItem('connections')}
+              onClick={() => this.props.getLSItem('windows')}
             >
-              Get connections from LS
+              Get windows from LS
             </Button>
             */}
             <Button
@@ -165,10 +165,10 @@ class App extends React.Component {
               onClick={() => {
                 const cs = this.getSpecialConnectionsObjectFromStore();
 
-                if (cs) this.props.setLSItem('connections', cs);
+                if (cs) this.props.setLSItem('windows', cs);
               }}
             >
-              Save connections from store to LS
+              Save windows from store to LS
             </Button>
             <Button
               basic
@@ -187,18 +187,18 @@ class App extends React.Component {
             <Divider />
             {/* <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' /> */}
             {
-              connections && Object.keys(connections).length
+              windows && Object.keys(windows).length
               ? (
                 <>
                   {
-                    getPartialBySize(Object.keys(connections), 1).map((chunk, i) => (
+                    getPartialBySize(Object.keys(windows), 1).map((chunk, i) => (
                       <Card.Group key={`${JSON.stringify(chunk)}--${i}`} itemsPerRow={chunk.length}>
                         {
                           Object.values(chunk).map(id => (
-                            connections[id]
+                            windows[id]
                             ? (
                               <Card
-                                key={connections[id].info.id}
+                                key={windows[id].info.id}
                                 // fluid
                                 style={{ position: 'relative' }}
                               >
@@ -207,7 +207,7 @@ class App extends React.Component {
                                     basic
                                     color='red'
                                     onClick={() => {
-                                      this.props.dispatch(removeConnection(id));
+                                      this.props.dispatch(removeWindow(id));
                                       removeRef(id);
                                     }}
                                   >
@@ -216,8 +216,8 @@ class App extends React.Component {
                                 </div>
                                 <Card.Content>
                                   {/* <Image floated='right' size='mini' src='/images/avatar/large/steve.jpg' /> */}
-                                  <Card.Header>{connections[id].info.user}@{connections[id].info.host}</Card.Header>
-                                  <Card.Meta>{connections[id].info.description}</Card.Meta>
+                                  <Card.Header>{windows[id].info.user}@{windows[id].info.host}</Card.Header>
+                                  <Card.Meta>{windows[id].info.description}</Card.Meta>
                                 </Card.Content>
                                 {/*
                                 <Card.Content>
@@ -225,8 +225,8 @@ class App extends React.Component {
                                     <Button
                                       basic
                                       color='blue'
-                                      onClick={() => connections[id].terminal.run(connections[id].comand)}
-                                      disabled={!connections[id].comand.length || !connections[id].pass || !connections[id].terminal}
+                                      onClick={() => windows[id].terminal.run(windows[id].comand)}
+                                      disabled={!windows[id].comand.length || !windows[id].pass || !windows[id].terminal}
                                     >
                                       Run
                                     </Button>
@@ -237,7 +237,7 @@ class App extends React.Component {
                                   <Form>
                                     <Form.Group widths='equal'>
                                       {
-                                        !connections[id].terminal
+                                        !windows[id].terminal
                                         ? (
                                           <Form.Input
                                             required
@@ -245,29 +245,29 @@ class App extends React.Component {
                                             type='password'
                                             label='Pass'
                                             placeholder='Password'
-                                            value={connections[id].pass}
-                                            onChange={ev => this.props.dispatch(updateConnection({ id, fieldName: 'pass', newValue: ev.target.value }))}
+                                            value={windows[id].pass}
+                                            onChange={ev => this.props.dispatch(updateWindow({ id, fieldName: 'pass', newValue: ev.target.value }))}
                                             onKeyUp={ev => {
                                               const _this = this;
 
                                               if (ev.keyCode == 13) {
                                                 addRef(id);
-                                                this.props.dispatch(updateConnection({
+                                                this.props.dispatch(updateWindow({
                                                   id,
                                                   fieldName: 'terminal',
                                                   newValue: new Terminal({
-                                                    host: connections[id].info.host,
-                                                    user: connections[id].info.user,
-                                                    pass: connections[id].pass,
-                                                    // cbOut: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
+                                                    host: windows[id].info.host,
+                                                    user: windows[id].info.user,
+                                                    pass: windows[id].pass,
+                                                    // cbOut: out => _this.props.dispatch(updateWindow({ id, fieldName: 'out', newValue: out })),
                                                     cbOut: out => {
                                                       _this.props.dispatch(updateOut({ id, out }));
                                                       _this.props.scrollDownByID(id);
                                                     },
-                                                    cbExe: out => _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: out })),
+                                                    cbExe: out => _this.props.dispatch(updateWindow({ id, fieldName: 'out', newValue: out })),
                                                     cbExit: code => {},
                                                     cbError: stderr => {
-                                                      _this.props.dispatch(updateConnection({ id, fieldName: 'out', newValue: stderr }));
+                                                      _this.props.dispatch(updateWindow({ id, fieldName: 'out', newValue: stderr }));
                                                       _this.props.scrollDownByID(id);
                                                     },
                                                   }),
@@ -282,48 +282,48 @@ class App extends React.Component {
                                         fluid
                                         label='Comand'
                                         placeholder='Comand'
-                                        value={connections[id].comand}
+                                        value={windows[id].comand}
                                         onChange={e => {
-                                          this.props.dispatch(updateConnection({ id, fieldName: 'comand', newValue: e.target.value }));
+                                          this.props.dispatch(updateWindow({ id, fieldName: 'comand', newValue: e.target.value }));
                                         }}
                                         onKeyUp={ev => {
-                                          const couldBeRunned = connections[id].terminal && (connections[id].comand.length > 0 || connections[id].pass || connections[id].terminal);
+                                          const couldBeRunned = windows[id].terminal && (windows[id].comand.length > 0 || windows[id].pass || windows[id].terminal);
 
                                           if (ev.keyCode == 13) {
                                             if (couldBeRunned) {
-                                              connections[id].terminal.run(connections[id].comand);
+                                              windows[id].terminal.run(windows[id].comand);
                                             } else {
                                               console.warn('Could not be runned.');
                                             }
                                             return;
                                           }
                                         }}
-                                        // disabled={!connections[id].comand.length || !connections[id].pass || !connections[id].terminal}
+                                        // disabled={!windows[id].comand.length || !windows[id].pass || !windows[id].terminal}
                                       />
                                     </Form.Group>
                                   </Form>
                                   {/*
-                                    connections[id].out
+                                    windows[id].out
                                     ? (
                                       <>
                                         <Divider horizontal>Out</Divider>
                                         <Card.Description>
-                                          <pre><small>{String(connections[id].out)}</small></pre>
+                                          <pre><small>{String(windows[id].out)}</small></pre>
                                         </Card.Description>
                                       </>
                                     ) : null
                                   */}
                                   {
-                                    connections[id].out
+                                    windows[id].out
                                     ? (
                                       <OutputSpace>
-                                        <pre ref={props[id]}><small>{String(connections[id].out)}</small></pre>
+                                        <pre ref={props[id]}><small>{String(windows[id].out)}</small></pre>
                                       </OutputSpace>
                                     ) : null
                                   }
                                 </Card.Content>
                               </Card>
-                            ) : <em>No connections[id] for {id} | connections is {JSON.stringify(connections)}</em>
+                            ) : <em>No windows[id] for {id} | windows is {JSON.stringify(windows)}</em>
                           ))
                         }
                       </Card.Group>
@@ -339,7 +339,7 @@ class App extends React.Component {
   }
 };
 App.propTypes = {
-  connections: PropTypes.shape({}),
+  windows: PropTypes.shape({}),
   // HOC
   getLSItem: PropTypes.func,
   setLSItem: PropTypes.func,
@@ -347,15 +347,15 @@ App.propTypes = {
   clearLS: PropTypes.func,
 };
 App.defaultProps = {
-  connections: {},
+  windows: {},
   getLSItem: () => null,
   setLSItem: (name, value) => console.log('Could not be done.'),
   removeLSItem: (name, value) => console.log('Could not be done.'),
   clearLS: () => console.log('Could not be done.'),
 };
 
-const mapState = ({ connections }) => ({
-  connections,
+const mapState = ({ windows }) => ({
+  windows,
 });
 
 export default withRefs(withLocalStorageManager(connect(mapState)(App)));

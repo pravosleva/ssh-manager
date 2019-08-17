@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import { connections } from './connections';
+import { windows } from './windows';
 
 
 const rootReducer = combineReducers({
   // state: (state = {}) => state,
-  connections,
+  windows, // Like { [id]: { ...<Obj for each Terminal class example> } }
 });
 
 export default rootReducer;

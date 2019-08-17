@@ -1,7 +1,7 @@
 import { createSymbiote } from 'redux-symbiote';
 // import Terminal from '../lib/Terminal';
 
-export const { actions: connectionsActions, reducer: connections } = createSymbiote(
+export const { actions: windowsActions, reducer: windows } = createSymbiote(
   {
     /* EXAMPLE
       '123': {
@@ -14,27 +14,17 @@ export const { actions: connectionsActions, reducer: connections } = createSymbi
         out: '',
         comand: '',
         description: '',
+
+        // Should not be updated (like immutable):
         terminal: new Terminal({
           host: '83.220.171.26',
           // port: '22',
           user: 'root',
           pass: 'your_passwd',
-          cbOut: out => {
-            const newConnections = { ...this.state.connections };
-            newConnections[id].out = out;
-
-            this.setState(prevState => ({ connections: newConnections }));
-          },
-          cbExe: out => {
-
-          },
+          cbOut: out => {},
+          cbExe: out => {},
           cbExit: code => {},
-          cbError: stderr => {
-            const newConnections = { ...this.state.connections };
-
-            newConnections[id].out = String(stderr);
-            this.setState(prevState => ({ connections: newConnections }));
-          }
+          cbError: stderr => {}
         }),
       }
     */
